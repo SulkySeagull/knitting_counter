@@ -39,7 +39,6 @@ class KnittingCommands:
 
         elif "row count" in command:
             response = self.project.rows_knitted()
-            self.on_save
             return response
 
         elif "current project" in command:
