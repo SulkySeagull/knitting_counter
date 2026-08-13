@@ -1,7 +1,6 @@
 import json
 from knitting_project import KnittingProject
 
-
 class Projects:
 
     def __init__(self):
@@ -47,3 +46,4 @@ class Projects:
         self.projects[name] = new_project
         self.current_project = new_project
         self.save(self.projects, name)
+
