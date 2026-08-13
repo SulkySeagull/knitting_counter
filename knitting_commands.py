@@ -1,10 +1,11 @@
 class KnittingCommands:
 
-    def __init__(self, current_project, on_create_project, on_save, on_delete_project):
-        self.on_create_project = on_create_project
-        self.on_save = on_save
-        self.on_delete_project = on_delete_project
-        self.project = current_project
+    def __init__(self, knitting_projects):
+        # self.on_create_project = on_create_project
+        # self.on_save = on_save
+        # self.on_delete_project = on_delete_project
+        #self.project = current_project
+        self.knitting_projects = knitting_projects
         self.multi_step_convo = None  # Tracks which multi step convo we are in
         self.convo_state = None  # Tracks what part of convo we are in
         self.convo_data = None  # Holds conversation data
@@ -39,7 +40,6 @@ class KnittingCommands:
 
         elif "row count" in command:
             response = self.project.rows_knitted()
-            self.on_save
             return response
 
         elif "current project" in command:
@@ -85,7 +85,8 @@ class KnittingCommands:
             )
         if self.convo_state == "confirming_deletion":
             if "yes" in command:
-                result = self.on_delete_project(self.convo_data)
+                result = self.knitting_projects.delete(self.convo_data)
+
                 self.multi_step_convo = None
                 self.convo_state = None
                 if result:
