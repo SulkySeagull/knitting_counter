@@ -5,9 +5,8 @@ class Projects:
 
     def __init__(self):
         self.projects, self.current_project = self.load()
-        print("Projects loaded...", flush=True)
 
-    def load():
+    def load(self):
         try:
             with open("projects.json", "r") as f:
                 data = json.load(f)
@@ -18,16 +17,15 @@ class Projects:
         except FileNotFoundError:
             return {}, None
 
-    def save(self, projects, current_project, file_path="projects.json"):
+    def save(self, file_path="projects.json"):
         projects_dict = {}
-        for name, project in projects.items():
+        for name, project in self.projects.items():
             projects_dict[name] = project.convert_to_json()
 
-        data = {"current project": current_project, "projects": projects_dict}
+        data = {"current project": self.current_project, "projects": projects_dict}
         with open(file_path, "w") as f:
             json.dump(data, f)
 
-        self.save(self.projects, self.current_project.name)
 
     def delete(self, name):
         if name not in self.projects:
@@ -41,9 +39,15 @@ class Projects:
         self.save(self.projects, self.current_project)
         return True
 
-    def new_project(self, projects, name):
+    def create_new_project(self, name):
         new_project = KnittingProject(name)
         self.projects[name] = new_project
         self.current_project = new_project
         self.save(self.projects, name)
+
+    def get_current_project(self):
+        if self.current_project is None:
+            return None
+        else:
+            return self.projects[self.current_project]
 

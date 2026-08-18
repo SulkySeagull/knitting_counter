@@ -1,18 +1,15 @@
 class KnittingCommands:
 
     def __init__(self, knitting_projects):
-        # self.on_create_project = on_create_project
-        # self.on_save = on_save
-        # self.on_delete_project = on_delete_project
-        #self.project = current_project
-        self.knitting_projects = knitting_projects
+        self.projects = knitting_projects
+        self.current_project = self.projects.get_current_project() 
         self.multi_step_convo = None  # Tracks which multi step convo we are in
         self.convo_state = None  # Tracks what part of convo we are in
         self.convo_data = None  # Holds conversation data
 
     def process_command(self, command):
         if self.multi_step_convo == "creating_project":
-            return self.create_new_project(command)
+            return self.projects.new_project(command)
 
         elif self.multi_step_convo == "deleting_project":
             return self.delete_project(command)
@@ -21,7 +18,7 @@ class KnittingCommands:
             self.multi_step_convo = "creating_project"
             return self.create_new_project(command)
 
-        elif self.project is None:
+        elif self.current_project is None:
             return "There are currently no projects. Please create a new project."
 
         elif "delete" in command:
@@ -29,21 +26,21 @@ class KnittingCommands:
             return self.delete_project(command)
 
         elif "add row" in command:
-            response = self.project.add_row()
-            self.on_save()
-            return response
+            response = self.current_project.add_row()
+            self.projects.save()
+            return "Added a row"
 
         elif "frog row" in command:
-            response = self.project.frog_row()
+            response = self.current_project.frog_row()
             self.on_save()
             return response
 
         elif "row count" in command:
-            response = self.project.rows_knitted()
+            response = self.current_project.rows_knitted()
             return response
 
         elif "current project" in command:
-            return self.project.name
+            return self.current_project.name
 
         else:
             return "pardon?"
@@ -59,7 +56,7 @@ class KnittingCommands:
 
         elif self.convo_state == "confirming_project":
             if "yes" in command:
-                self.on_create_project(self.convo_data)
+                self.projects.create_new_project(self.convo_data)
                 self.multi_step_convo = None
                 self.convo_state = None
                 return f"Created new project {self.convo_data}"
@@ -85,7 +82,7 @@ class KnittingCommands:
             )
         if self.convo_state == "confirming_deletion":
             if "yes" in command:
-                result = self.knitting_projects.delete(self.convo_data)
+                result = self.projects.delete(self.convo_data)
 
                 self.multi_step_convo = None
                 self.convo_state = None

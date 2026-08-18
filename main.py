@@ -7,7 +7,7 @@ from speaker import Speaker
 class App:
     def __init__(self):
         print("App starting...", flush=True)
-        self.knitting_projects = Projects.load()
+        self.knitting_projects = Projects()
         print("Projects loaded...", flush=True)
         self.handler = KnittingCommands(self.knitting_projects)
         self.speaker = Speaker()
