@@ -2,14 +2,14 @@ class KnittingCommands:
 
     def __init__(self, knitting_projects):
         self.projects = knitting_projects
-        self.current_project = self.projects.get_current_project() 
+        self.current_project = self.projects.get_current_project()
         self.multi_step_convo = None  # Tracks which multi step convo we are in
         self.convo_state = None  # Tracks what part of convo we are in
         self.convo_data = None  # Holds conversation data
 
     def process_command(self, command):
         if self.multi_step_convo == "creating_project":
-            return self.projects.new_project(command)
+            return self.create_new_project(command)
 
         elif self.multi_step_convo == "deleting_project":
             return self.delete_project(command)
@@ -32,7 +32,7 @@ class KnittingCommands:
 
         elif "frog row" in command:
             response = self.current_project.frog_row()
-            self.on_save()
+            self.save()
             return response
 
         elif "row count" in command:
@@ -41,6 +41,15 @@ class KnittingCommands:
 
         elif "current project" in command:
             return self.current_project.name
+
+        elif "switch project" in command:
+            pass
+
+        elif "list all projects" in command:
+            return self.projects.all_project_names()
+
+        elif "test project grammer" in command:
+            pass
 
         else:
             return "pardon?"
@@ -56,18 +65,22 @@ class KnittingCommands:
 
         elif self.convo_state == "confirming_project":
             if "yes" in command:
-                self.projects.create_new_project(self.convo_data)
+                self.projects.new_project(self.convo_data)
+                self.current_project = self.projects.get_current_project()
                 self.multi_step_convo = None
                 self.convo_state = None
                 return f"Created new project {self.convo_data}"
+
             elif "cancel" in command:
                 self.multi_step_convo = None
                 self.convo_state = None
                 return f"Project creation has been cancelled"
+
             else:
                 # If user doesn't like the name need to add cancel option in
                 self.convo_state = "naming_project"
                 return "OPEN GRAMMAR", "What would you like to call this project"
+
         else:
             self.convo_state = "naming_project"
             return "OPEN GRAMMAR", "What would you like to call this project"
@@ -80,22 +93,31 @@ class KnittingCommands:
                 "CONSTRAIN GRAMMAR",
                 f"Are you sure you want to delete {command}?",
             )
+
         if self.convo_state == "confirming_deletion":
+
             if "yes" in command:
                 result = self.projects.delete(self.convo_data)
 
                 self.multi_step_convo = None
                 self.convo_state = None
+
                 if result:
+                    if(self.convo_data == self.projects.current_project):
+                        self.current_project = None
                     return f"{self.convo_data} has been deleted"
+
                 else:
                     return f"Sorry I couldn't find {self.convo_data} project to delete"
 
             else:
-                # If user doesn't like the name need to add cancel option in
                 self.multi_step_convo = None
                 self.convo_state = None
                 return "Deletion has been cancelled"
         else:
             self.convo_state = "deleting_project"
             return "OPEN GRAMMAR", "Which project would you like to delete?"
+
+    # TO IMPLEMENT
+    def switch_project(self, command):
+        pass

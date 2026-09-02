@@ -17,7 +17,10 @@ class Projects:
         except FileNotFoundError:
             return {}, None
 
-    def save(self, file_path="projects.json"):
+    def save(self):
+        if self.current_project is None:
+            self.current_project = name
+        file_path = "projects.json"
         projects_dict = {}
         for name, project in self.projects.items():
             projects_dict[name] = project.convert_to_json()
@@ -35,19 +38,29 @@ class Projects:
 
         if self.current_project == name:
             self.current = None
+            
 
-        self.save(self.projects, self.current_project)
+        self.save()
         return True
 
-    def create_new_project(self, name):
+    def new_project(self, name):
         new_project = KnittingProject(name)
+        self.current_project = name
         self.projects[name] = new_project
-        self.current_project = new_project
-        self.save(self.projects, name)
+        self.save()
+        
 
     def get_current_project(self):
         if self.current_project is None:
             return None
         else:
             return self.projects[self.current_project]
+
+    #returns all project names in one string
+    def all_project_names(self) :
+        names = list(self.projects.keys())
+        names_string = " ".join(names)     
+        return names_string
+
+    
 

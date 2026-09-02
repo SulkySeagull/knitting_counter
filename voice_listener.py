@@ -56,8 +56,9 @@ class Listener:
         except KeyboardInterrupt:
             print("\nStopped listening")
         except Exception as e:
-            #print("Error in Voice Listener:", e)
+            # print("Error in Voice Listener:", e)
             import traceback
+
             traceback.print_exc()
 
     def stop(self):
@@ -65,8 +66,17 @@ class Listener:
 
     def set_command_grammer(self):
         self.rec.SetGrammar(
-            '["add row", "frog row", "row count", "new project", "create project", "delete project", "trash project", "row count", "yes", "no","current project", "delete", "cancel", "[unk]"]'
+            '["add row", "frog row", "row count", "new project", "create project", "delete project", "trash project", "row count", "yes", "no","current project", "delete", "cancel", "list all projects", "[unk]"]'
         )
 
     def set_open_grammer(self):
         self.rec = KaldiRecognizer(self.model, self.sample_rate)
+
+    #Set grammer to be project names. Used when switching projects NEEDS TESTING
+    def set_project_name_grammer(self):
+         grammer_string = '["'
+         names = list(self.projects.keys())
+         names_string = ", ".join(names)
+         grammer_string += names_string
+         print(grammer_string)     
+    
