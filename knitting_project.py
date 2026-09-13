@@ -19,6 +19,7 @@ class KnittingProject:
 
     def frog_row(self):
         # Making sure row count doesn't go into negative
+        # Need to communicate with user if they are trying to frog a row that is at zero already
         if self.row_count >= 1:
             self.row_count -= 1
 

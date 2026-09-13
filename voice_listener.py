@@ -3,7 +3,6 @@ import json
 import sounddevice as sd
 from vosk import Model, KaldiRecognizer
 
-
 class Listener:
     def __init__(self, handler, speaker):
         self.handler = handler
@@ -42,9 +41,12 @@ class Listener:
                                 signal, message = response
                                 if signal == "OPEN GRAMMAR":
                                     self.set_open_grammer()
-                                # Otherwise switch back to set commands
+                                elif signal == "PROJECT NAME GRAMMER":
+                                    print("Signal recieved")
+                                    self.set_project_name_grammer()
                                 else:
                                     self.set_command_grammer()
+
                                 print(f"DEBUG speaker type: {type(self.speaker)}")
                                 self.speaker.say(message)
                             else:
@@ -66,17 +68,16 @@ class Listener:
 
     def set_command_grammer(self):
         self.rec.SetGrammar(
-            '["add row", "frog row", "row count", "new project", "create project", "delete project", "trash project", "row count", "yes", "no","current project", "delete", "cancel", "list all projects", "[unk]"]'
+            '["add row", "frog row", "row count", "new project", "create project", "delete project", "trash project", "row count", "yes", "no","current project", "delete", "cancel", "list all projects", "switch project", "[unk]"]'
         )
 
     def set_open_grammer(self):
         self.rec = KaldiRecognizer(self.model, self.sample_rate)
 
-    #Set grammer to be project names. Used when switching projects NEEDS TESTING
+    # Set grammer to be project names. Used when switching projects NEEDS TESTING
     def set_project_name_grammer(self):
-         grammer_string = '["'
-         names = list(self.projects.keys())
-         names_string = ", ".join(names)
-         grammer_string += names_string
-         print(grammer_string)     
-    
+        grammer_string = self.handler.projects.project_grammer_string()
+        print(f"This is the project grammer string {grammer_string} ")
+        self.rec.SetGrammar(grammer_string)
+        print("Grammer String set")
+        

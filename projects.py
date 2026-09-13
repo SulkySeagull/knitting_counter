@@ -1,6 +1,7 @@
 import json
 from knitting_project import KnittingProject
 
+
 class Projects:
 
     def __init__(self):
@@ -18,8 +19,8 @@ class Projects:
             return {}, None
 
     def save(self):
-        if self.current_project is None:
-            self.current_project = name
+        #if self.current_project is None:
+            #self.current_project = name
         file_path = "projects.json"
         projects_dict = {}
         for name, project in self.projects.items():
@@ -29,7 +30,6 @@ class Projects:
         with open(file_path, "w") as f:
             json.dump(data, f)
 
-
     def delete(self, name):
         if name not in self.projects:
             return False
@@ -37,8 +37,7 @@ class Projects:
         del self.projects[name]
 
         if self.current_project == name:
-            self.current = None
-            
+            self.current_project = None
 
         self.save()
         return True
@@ -48,7 +47,6 @@ class Projects:
         self.current_project = name
         self.projects[name] = new_project
         self.save()
-        
 
     def get_current_project(self):
         if self.current_project is None:
@@ -56,11 +54,26 @@ class Projects:
         else:
             return self.projects[self.current_project]
 
-    #returns all project names in one string
-    def all_project_names(self) :
-        names = list(self.projects.keys())
-        names_string = " ".join(names)     
-        return names_string
+    def switch(self, name):
+        if name not in self.projects:
+            return False
+        else:
+            self.current_project = name
+            self.save()
+            return True
 
     
 
+    # returns all project names in one string
+    def all_project_names(self):
+        names = list(self.projects.keys())
+        names_string = " ".join(names)
+        return names_string
+
+    def project_grammer_string(self):
+        grammer_string = '["'
+        names = list(self.projects.keys())
+        names_string = '", "'.join(names)
+        grammer_string += names_string
+        grammer_string += '", "[unk]"]'
+        return grammer_string

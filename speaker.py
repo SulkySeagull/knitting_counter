@@ -9,7 +9,7 @@ class Speaker:
 
       
     def say(self, text):
-        audio = self.tts_model.generate_audio(self.voice_state, text + " ")
+        audio = self.tts_model.generate_audio(self.voice_state, text + "   ")
         sd.play(audio.numpy(), self.tts_model.sample_rate)
         sd.wait()
         time.sleep(0.5)
